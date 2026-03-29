@@ -1,8 +1,19 @@
 import express from 'express';
+import {
+  createOrder, getMyOrders, getOrderById,
+  updateOrderToPaid, getAllOrders, updateOrderStatus, getAdminStats,
+} from '../controllers/orderController.js';
+import { protect, adminOnly } from '../middleware/authMiddleware.js';
+import validateObjectId from '../middleware/validateObjectId.js';
 
 const router = express.Router();
 
-// Routes will be added in Phase 2
-router.get('/', (req, res) => res.json({ message: 'Order routes working ✅' }));
+router.post('/',               protect,               createOrder);
+router.get('/myorders',        protect,               getMyOrders);
+router.get('/admin/stats',     protect, adminOnly,    getAdminStats);
+router.get('/:id',             validateObjectId('id'), protect,              getOrderById);
+router.put('/:id/pay',         validateObjectId('id'), protect,              updateOrderToPaid);
+router.get('/',                protect, adminOnly,    getAllOrders);
+router.put('/:id/status',      validateObjectId('id'), protect, adminOnly,   updateOrderStatus);
 
 export default router;

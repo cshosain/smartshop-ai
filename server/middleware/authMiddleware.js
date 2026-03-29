@@ -17,3 +17,13 @@ export const adminOnly = (req, res, next) => {
   if (req.user?.role === 'admin') return next();
   res.status(403).json({ message: 'Admin access only' });
 };
+// Optional protect — attaches user if token exists, but doesn't block
+export const optionalProtect = async (req, res, next) => {
+  const token = req.cookies.accessToken;
+  if (!token) return next();
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = await User.findById(decoded.id).select('-password');
+  } catch { /* ignore */ }
+  next();
+};
