@@ -42,8 +42,10 @@ export const toggleWishlist = async (req, res) => {
 // @GET /api/users/recommendations
 export const getRecommendations = async (req, res) => {
   try {
+    // Limit top_n to 30 to prevent abuse
+    const topN = parseInt(req.query.top_n) > 30 ? 30 : parseInt(req.query.top_n) || 8;
     const { data } = await axios.get(
-      `${process.env.ML_SERVICE_URL}/recommend/user/${req.user._id}`
+      `${process.env.ML_SERVICE_URL}/recommend/user/${req.user._id}/?top_n=${topN}`
     );
     const Product  = (await import('../models/Product.js')).default;
     const products = await Product.find({ _id: { $in: data.product_ids } });
