@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Response
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 from routers import recommendations, sentiment
@@ -19,24 +19,17 @@ app.add_middleware(
         "http://localhost:5000",
         "http://localhost:5173",
         "https://smartshop-api.onrender.com",
-        "https://your-smartshop.vercel.app",    # ← update with your real Vercel URL
+        "https://your-smartshop.vercel.app",
     ],
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-app.include_router(
-    recommendations.router,
-    prefix="/recommend",
-    tags=["Recommendations"],
-)
-app.include_router(
-    sentiment.router,
-    prefix="/sentiment",
-    tags=["Sentiment"],
-)
+app.include_router(recommendations.router, prefix="/recommend", tags=["Recommendations"])
+app.include_router(sentiment.router,       prefix="/sentiment",  tags=["Sentiment"])
 
-@app.get("/", tags=["Health"])
+# Handles both GET and HEAD — HEAD is used by Render health checks
+@app.api_route("/", methods=["GET", "HEAD"], tags=["Health"])
 def root():
     return {
         "service": "SmartShop ML Service",
@@ -45,6 +38,6 @@ def root():
         "docs":    "/docs",
     }
 
-@app.get("/health", tags=["Health"])
+@app.api_route("/health", methods=["GET", "HEAD"], tags=["Health"])
 def health():
     return {"status": "healthy ✅"}
