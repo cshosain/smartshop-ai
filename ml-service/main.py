@@ -19,6 +19,8 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:5000",
         "http://localhost:5173",
+        "https://smartshop-ai-ukh1.onrender.com",   # ← your Render backend URL
+        "https://your-app.vercel.app",           # ← your Vercel frontend URL
     ],
     allow_methods=["*"],
     allow_headers=["*"],
