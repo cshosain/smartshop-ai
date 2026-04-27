@@ -17,7 +17,13 @@ const app = express();
 
 // Security & Middleware
 app.use(helmet());
-app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
+app.use(cors({
+  origin: [
+    'http://localhost:5173',
+    process.env.CLIENT_URL,
+  ].filter(Boolean),
+  credentials: true,
+}));
 app.use(express.json());
 app.use(cookieParser());
 app.use(morgan('dev'));
