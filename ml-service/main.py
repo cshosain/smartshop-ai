@@ -2,7 +2,6 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 from routers import recommendations, sentiment
-import os
 
 load_dotenv()
 
@@ -10,8 +9,8 @@ app = FastAPI(
     title="SmartShop ML Service",
     description="ML microservice — recommendations and sentiment analysis",
     version="1.0.0",
-    docs_url="/docs",      # Swagger UI at http://localhost:8000/docs
-    redoc_url="/redoc",    # ReDoc UI  at http://localhost:8000/redoc
+    docs_url="/docs",
+    redoc_url="/redoc",
 )
 
 app.add_middleware(
@@ -19,8 +18,8 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:5000",
         "http://localhost:5173",
-        "https://smartshop-ai-ukh1.onrender.com",   # ← your Render backend URL
-        "https://your-app.vercel.app",           # ← your Vercel frontend URL
+        "https://smartshop-api.onrender.com",
+        "https://your-smartshop.vercel.app",    # ← update with your real Vercel URL
     ],
     allow_methods=["*"],
     allow_headers=["*"],
@@ -43,9 +42,9 @@ def root():
         "service": "SmartShop ML Service",
         "version": "1.0.0",
         "status":  "running 🤖",
-        "docs":    "http://localhost:8000/docs",
+        "docs":    "/docs",
     }
 
 @app.get("/health", tags=["Health"])
 def health():
-    return { "status": "healthy ✅" }
+    return {"status": "healthy ✅"}

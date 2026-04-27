@@ -1,3 +1,13 @@
+import nltk
+
+# Download required data before any NLTK classes are instantiated
+# This runs at import time — exactly when we need it
+for _pkg in ['vader_lexicon', 'punkt', 'stopwords']:
+    try:
+        nltk.download(_pkg, quiet=True)
+    except Exception:
+        pass
+
 from fastapi import APIRouter
 from pydantic import BaseModel
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
@@ -9,6 +19,9 @@ sia    = SentimentIntensityAnalyzer()
 class TextInput(BaseModel):
     text: str
 
+class BatchInput(BaseModel):
+    texts: list[str]
+
 # ─────────────────────────────────────────────
 # POST /sentiment/analyze
 # ─────────────────────────────────────────────
@@ -18,21 +31,16 @@ def analyze_sentiment(payload: TextInput):
 
     if not text:
         return {
-            "sentiment": "neutral",
-            "score":     0.0,
-            "vader":     {},
-            "blob_polarity": 0.0,
+            "sentiment":      "neutral",
+            "score":          0.0,
+            "vader":          {},
+            "blob_polarity":  0.0,
         }
 
-    # VADER — best for short review-style text
-    vader_scores = sia.polarity_scores(text)
-    compound     = vader_scores["compound"]
-
-    # TextBlob — second signal for better accuracy
+    vader_scores  = sia.polarity_scores(text)
+    compound      = vader_scores["compound"]
     blob_polarity = TextBlob(text).sentiment.polarity
-
-    # Weighted combination (VADER is more reliable for reviews)
-    final_score = (compound * 0.7) + (blob_polarity * 0.3)
+    final_score   = (compound * 0.7) + (blob_polarity * 0.3)
 
     if final_score >= 0.05:
         sentiment = "positive"
@@ -50,11 +58,7 @@ def analyze_sentiment(payload: TextInput):
 
 # ─────────────────────────────────────────────
 # POST /sentiment/analyze-batch
-# Analyze multiple reviews at once
 # ─────────────────────────────────────────────
-class BatchInput(BaseModel):
-    texts: list[str]
-
 @router.post("/analyze-batch")
 def analyze_batch(payload: BatchInput):
     results = []
@@ -77,8 +81,8 @@ def analyze_batch(payload: BatchInput):
             "score":     round(final_score, 4),
         })
 
-    return { "results": results, "count": len(results) }
+    return {"results": results, "count": len(results)}
 
 @router.get("/health")
 def sentiment_health():
-    return { "status": "Sentiment service running ✅" }
+    return {"status": "Sentiment service running ✅"}
