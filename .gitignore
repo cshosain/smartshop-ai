@@ -38,3 +38,4 @@ Thumbs.db
 ml-service/models/*.pkl
 ml-service/models/*.joblib
 ml-service/data/*.csv
+readme.test.md

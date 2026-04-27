@@ -232,6 +232,7 @@ def get_hybrid_recommendations(user_id: str, top_n: int = 8):
 
     if not collab_ids:
         # Not enough global data — pure content-based fallback
+        print("No collaborative candidates, falling back to content-based for top interaction")
         top_product = user_interactions.sort_values(
             "score", ascending=False
         ).iloc[0]["product"]

@@ -49,6 +49,7 @@ export const getRecommendations = async (req, res) => {
     );
     const Product  = (await import('../models/Product.js')).default;
     const products = await Product.find({ _id: { $in: data.product_ids } });
+    console.log(data.has_history);
     res.json(products);
   } catch {
     // Fallback: return featured products

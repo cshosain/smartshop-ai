@@ -17,6 +17,16 @@ export const adminOnly = (req, res, next) => {
   if (req.user?.role === 'admin') return next();
   res.status(403).json({ message: 'Admin access only' });
 };
+
+// Blocks admin accounts from performing customer actions
+export const customerOnly = (req, res, next) => {
+  if (req.user?.role === 'admin') {
+    return res.status(403).json({
+      message: 'Admin accounts cannot place orders. Use a customer account.',
+    });
+  }
+  next();
+};
 // Optional protect — attaches user if token exists, but doesn't block
 export const optionalProtect = async (req, res, next) => {
   const token = req.cookies.accessToken;

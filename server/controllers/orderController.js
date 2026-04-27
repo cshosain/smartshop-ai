@@ -50,10 +50,22 @@ export const updateOrderToPaid = async (req, res) => {
   res.json(order);
 };
 
-// @GET /api/orders (admin)
+// @GET /api/orders (admin) — with pagination
 export const getAllOrders = async (req, res) => {
-  const orders = await Order.find({}).populate('user', 'name email').sort({ createdAt: -1 });
-  res.json(orders);
+  const page  = Number(req.query.page)  || 1;
+  const limit = Number(req.query.limit) || 15;
+  const skip  = (page - 1) * limit;
+
+  const [orders, total] = await Promise.all([
+    Order.find({})
+      .populate('user', 'name email')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit),
+    Order.countDocuments(),
+  ]);
+
+  res.json({ orders, page, pages: Math.ceil(total / limit), total });
 };
 
 // @PUT /api/orders/:id/status (admin)
