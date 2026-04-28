@@ -20,9 +20,11 @@ app.use(helmet());
 app.use(cors({
   origin: [
     'http://localhost:5173',
+    'http://localhost:3000',
     process.env.CLIENT_URL,
   ].filter(Boolean),
   credentials: true,
+  sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Strict',
 }));
 app.use(express.json());
 app.use(cookieParser());

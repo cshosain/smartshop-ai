@@ -43,7 +43,7 @@ export const refreshToken = (req, res) => {
     res.cookie('accessToken', accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Strict' ,
       maxAge: 15 * 60 * 1000,
     });
     res.json({ message: 'Token refreshed' });
