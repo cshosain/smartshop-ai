@@ -18,9 +18,7 @@ const app = express();
 // Security & Middleware
 app.use(helmet());
 app.use(cors({
-  origin: [
-    process.env.CLIENT_URL
-  ].filter(Boolean),
+  origin: process.env.CLIENT_URL || 'http://localhost:5173',
   credentials: true,
   httpOnly: true,
   sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Strict',
